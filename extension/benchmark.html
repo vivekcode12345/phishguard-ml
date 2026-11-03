@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"><title>PhishGuard benchmark</title>
+  <link rel="stylesheet" href="ui.css">
+  <style>body{padding:24px;max-width:760px} table{border-collapse:collapse;width:100%;margin:12px 0} td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left} th{color:var(--muted);font-weight:500}</style>
+</head>
+<body>
+  <h1>On-device performance benchmark</h1>
+  <p class="muted">Measures model load time, preprocessing and inference latency, extension round-trip latency and JS heap usage. Add <span class="mono">?api=http://127.0.0.1:8787/score</span> to compare with a server API.</p>
+  <button class="primary" id="run">Run benchmark</button>
+  <pre id="out" class="mono"></pre>
+  <script src="vendor/ort.wasm.min.js"></script>
+  <script type="module" src="benchmark.js"></script>
+</body>
+</html>

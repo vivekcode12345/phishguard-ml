@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "PhishGuard Local",
+  "version": "0.1.0",
+  "description": "On-device phishing URL detection. The model runs inside your browser and URLs are never sent to a server.",
+  "minimum_chrome_version": "116",
+  "permissions": ["webNavigation", "storage", "offscreen", "activeTab"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": {
+    "default_title": "PhishGuard Local",
+    "default_popup": "popup.html",
+    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png" }
+  },
+  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  }
+}
