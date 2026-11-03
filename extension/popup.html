@@ -4,34 +4,45 @@
   <meta charset="utf-8"><title>PhishGuard Local</title>
   <link rel="stylesheet" href="ui.css">
   <style>
-    body { width: 340px; padding: 14px; }
-    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
-    .status { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    body { width: 340px; padding: 16px; }
+    header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    header .muted { text-align: right; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .eyebrow { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .status { font-size: 16px; font-weight: 700; margin: 4px 0 5px; }
     .status.ok { color: var(--ok); } .status.bad { color: var(--bad); }
-    .bar { position: relative; height: 8px; border-radius: 4px; background: var(--line); margin: 10px 0 4px; }
-    .bar > .fill { height: 100%; border-radius: 4px; background: var(--ok); }
+    .status.neutral { color: var(--fg); }
+    .bar-wrap { position: relative; padding-top: 5px; }
+    .bar { position: relative; height: 10px; border-radius: 5px; background: var(--line); margin: 10px 0 4px; }
+    .bar > .fill { height: 100%; border-radius: 5px; background: var(--ok); }
     .bar > .fill.bad { background: var(--bad); }
-    .bar > .thr { position: absolute; top: -3px; width: 2px; height: 14px; background: var(--fg); }
-    .row { display: flex; gap: 6px; } .row input { flex: 1; }
-    footer { display: flex; justify-content: space-between; align-items: center; }
+    .bar > .thr { position: absolute; top: -3px; width: 3px; height: 16px; background: var(--fg); border-radius: 2px; }
+    .threshold { display: flex; justify-content: space-between; }
+    .row { display: flex; gap: 7px; } .row input { flex: 1; min-width: 0; }
+    footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
     label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
-    .url { font-size: 12px; max-height: 3.6em; overflow: hidden; }
+    .url { font-size: 12px; max-height: 4.5em; overflow: auto; }
+    .privacy-note { margin: 10px 0 0; }
   </style>
 </head>
 <body>
   <header>
     <h1>PhishGuard Local</h1>
-    <span class="muted">runs on this device</span>
+    <span class="muted">on-device analysis</span>
   </header>
   <div class="card" id="verdict">
-    <div class="status" id="status">Checking…</div>
+    <div class="eyebrow">Current page</div>
+    <div class="status neutral" id="status" aria-live="polite">Checking…</div>
     <div class="url mono muted" id="url"></div>
-    <div class="bar" id="bar" hidden><div class="fill" id="fill"></div><div class="thr" id="thr"></div></div>
+    <div class="bar-wrap" id="bar" hidden>
+      <div class="bar" role="img" aria-label="Phishing score compared with alert threshold"><div class="fill" id="fill"></div><div class="thr" id="thr"></div></div>
+      <div class="threshold muted"><span>0%</span><span>Alert threshold</span><span>100%</span></div>
+    </div>
     <div class="muted" id="detail"></div>
+    <p class="muted privacy-note">Analysed on this device. The address was not sent anywhere.</p>
   </div>
   <div class="card">
-    <div class="muted" style="margin-bottom:6px">Check a URL (analysed locally)</div>
+    <div class="muted" style="margin-bottom:8px">Check a URL</div>
     <div class="row"><input type="text" id="manual" placeholder="https://example.com/login"><button class="primary" id="go">Check</button></div>
   </div>
   <footer>

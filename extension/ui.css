@@ -1,16 +1,23 @@
 :root {
-  --bg: #ffffff; --fg: #1b1f24; --muted: #5f6b7a; --card: #f3f6fa; --line: #d8dee6;
-  --ok: #2e7d32; --bad: #c62828; --accent: #1565c0;
+  --bg: #f7f9fc; --fg: #18212b; --muted: #526170; --card: #ffffff; --line: #d5dde7;
+  --ok: #176b3a; --bad: #a5222b; --accent: #1558a6; --accent-contrast: #ffffff;
+  --focus: #1558a6; --warning-bg: #fff7ed; --warning-line: #f2b66d;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #14181d; --fg: #e8ecf1; --muted: #9aa7b6; --card: #1d232b; --line: #2d3641; --ok: #66bb6a; --bad: #ef5350; --accent: #64a8f0; }
+  :root { --bg: #12171d; --fg: #e8edf3; --muted: #aab6c3; --card: #1b232c; --line: #35414e; --ok: #70d49a; --bad: #ff7b83; --accent: #76b7ff; --accent-contrast: #07111c; --focus: #9bcaff; --warning-bg: #30241b; --warning-line: #a66b2b; }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
 h1 { font-size: 16px; margin: 0; }
 .muted { color: var(--muted); font-size: 12px; }
-button { font: inherit; border-radius: 6px; border: 1px solid var(--line); background: var(--card); color: var(--fg); padding: 6px 12px; cursor: pointer; }
-button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button { font: inherit; border-radius: 7px; border: 1px solid var(--line); background: var(--card); color: var(--fg); padding: 7px 12px; cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
 button.danger { background: transparent; border-color: var(--bad); color: var(--bad); }
-input[type=text] { font: inherit; width: 100%; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+button:hover { filter: brightness(.97); }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+input[type=text] { font: inherit; width: 100%; padding: 7px 9px; border-radius: 7px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
 .mono { font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+th { color: var(--muted); font-size: 12px; font-weight: 600; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; }

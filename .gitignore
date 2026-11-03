@@ -1,1 +1,13 @@
 node_modules/
+.DS_Store
+.vscode/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.env
+*.log
+/data/
+/results/*.parquet
+/results/*.npz
+/data/*.parquet
+/data/*.npz

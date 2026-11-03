@@ -4,6 +4,7 @@ import { loadEngine } from "./lib/engine.js";
 
 const N = 500, WARMUP = 30;
 const out = document.getElementById("out");
+const metrics = document.getElementById("metrics");
 const log = (s) => { out.textContent += s + "\n"; };
 const heapMB = () => (performance.memory ? performance.memory.usedJSHeapSize / 1048576 : null);
 
@@ -56,11 +57,46 @@ async function run() {
   return result;
 }
 
+function formatMetric(value) {
+  if (!value || typeof value !== "object") return ["—", "—", "—", "—"];
+  return ["mean", "p50", "p95", "p99"].map((key) => value[key] == null ? "—" : `${value[key].toFixed(2)} ms`);
+}
+
+function renderMetrics(result) {
+  metrics.textContent = "";
+  const rows = [
+    ["Preprocessing", result.preprocessMs],
+    ["Inference", result.inferenceMs],
+    ["Local total", result.localTotalMs],
+    ["Extension round trip", result.extensionRoundTripMs],
+    ["API round trip", result.apiRoundTripMs],
+  ];
+  for (const [label, value] of rows) {
+    const row = document.createElement("tr");
+    const name = document.createElement("th");
+    name.scope = "row";
+    name.textContent = label;
+    row.append(name);
+    for (const cell of formatMetric(value)) {
+      const td = document.createElement("td");
+      td.textContent = cell;
+      row.append(td);
+    }
+    metrics.append(row);
+  }
+}
+
 document.getElementById("run").addEventListener("click", async () => {
   out.textContent = "Running…\n";
+  metrics.textContent = "";
+  const row = document.createElement("tr");
+  const cell = document.createElement("td");
+  cell.colSpan = 5; cell.className = "muted"; cell.textContent = "Running benchmark…";
+  row.append(cell); metrics.append(row);
   try {
     const result = await run();
     window.__bench = result;
+    renderMetrics(result);
     out.textContent = JSON.stringify(result, null, 2);
     document.title = "benchmark done";
   } catch (e) {

@@ -5,6 +5,25 @@ A Manifest V3 Chrome extension that classifies every main-frame navigation with 
 **inside the browser** with ONNX Runtime Web (WebAssembly). URLs are never sent to a server and no
 browsing history is stored (only two counters: URLs checked and warnings shown).
 
+## Contents
+
+- [Quick start](#quick-start)
+- [Repository layout](#repository-layout)
+- [How it works](#how-it-works)
+- [Tests](#tests)
+- [Performance](#performance)
+- [Limitations](#limitations)
+- [Screenshots](#screenshots)
+
+## Quick start
+
+1. Open `chrome://extensions` and enable **Developer mode**.
+2. Click **Load unpacked** and select this `extension/` folder.
+3. Click the extension icon and use **Check a URL** to score an address locally.
+4. Open `chrome-extension://<extension-id>/benchmark.html` and click **Run benchmark**.
+
+Do not visit real phishing sites to test; use the popup or the stubbed-network test.
+
 ## Repository layout
 
 | Path | Content |
@@ -92,3 +111,9 @@ Notes for interpreting the numbers:
 - Feature extraction is case-sensitive like the training code. Chrome lower-cases hostnames, while a few
   training URLs had upper-case hosts, which is a negligible train/deploy difference.
 - The public suffix list is a snapshot (`psl_icann.json`) and should be refreshed when the model is retrained.
+
+## Screenshots
+
+![Popup](../results/screenshots/popup.png)
+
+![Warning page](../results/screenshots/warning.png)

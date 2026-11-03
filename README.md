@@ -6,6 +6,28 @@ A phishing URL detector that combines a character-level CNN with handcrafted lex
 **chronological and domain-disjoint splits** (not only random splits) and deployed as a **Chrome extension whose model
 runs entirely inside the browser**. Visited URLs are never sent to a server.
 
+## Contents
+
+- [Quick start](#quick-start)
+- [Contributions](#contributions)
+- [Data](#data)
+- [Models](#models)
+- [Results](#results)
+- [On-device deployment](#on-device-deployment)
+- [Repository layout](#repository-layout)
+- [Limitations](#limitations)
+- [Reproducibility](#reproducibility)
+- [Screenshots](#screenshots)
+
+## Quick start
+
+1. Open `chrome://extensions` and enable **Developer mode**.
+2. Click **Load unpacked** and select the `extension/` folder.
+3. Click the extension icon and use **Check a URL** to score an address locally.
+4. Open `chrome-extension://<extension-id>/benchmark.html` and click **Run benchmark**.
+
+Do not visit real phishing sites to test; use the popup or the stubbed-network end-to-end test.
+
 ## Contributions
 
 1. **Honest zero-day evaluation.** Random, domain-disjoint and strictly chronological splits on the same data.
@@ -128,3 +150,32 @@ ONNX probabilities agree within 4.5e-7 with 0 decision flips; an end-to-end brow
 - Results come from a single dataset, a single data collection window and one validation-selected threshold.
 - Manifest V3 cannot block a navigation synchronously; the warning page replaces the tab a few milliseconds after the navigation starts.
 - Performance numbers are from one machine and one run per measurement.
+
+## Reproducibility
+
+The notebook rebuilds the data and produces the reported splits, models, robustness experiments and ONNX export.
+Open `notebooks/project.ipynb` in Colab or Jupyter and run its cells in order. The source data is not committed.
+
+Install the JavaScript dependencies and run the parity and edge-case checks with:
+
+```bash
+npm install
+npm run test:parity
+npm run test:edge
+```
+
+For the browser test, install the Playwright browser and run:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+The extension benchmark is run manually from `chrome-extension://<extension-id>/benchmark.html`; append
+`?api=http://127.0.0.1:8787/score` when comparing with the local HTTP API.
+
+## Screenshots
+
+![Popup](results/screenshots/popup.png)
+
+![Warning page](results/screenshots/warning.png)

@@ -4,8 +4,8 @@ const send = (msg) => chrome.runtime.sendMessage({ target: "background", ...msg 
 function show(url, v) {
   $("url").textContent = url || "";
   if (!v || v.ok === false) {
-    $("status").className = "status";
-    $("status").textContent = v && v.error ? "Could not analyse this URL" : "Not analysed";
+    $("status").className = "status neutral";
+    $("status").textContent = v && v.error ? "Could not analyse this URL" : "This page type is not analysed";
     $("bar").hidden = true; $("detail").textContent = "";
     return;
   }
@@ -16,7 +16,7 @@ function show(url, v) {
   $("fill").style.width = Math.round(v.prob * 100) + "%";
   $("thr").style.left = Math.round(v.threshold * 100) + "%";
   const ms = v.timings ? v.timings.totalMs.toFixed(1) : "?";
-  $("detail").textContent = `Phishing score ${(v.prob * 100).toFixed(1)}% · alert threshold ${(v.threshold * 100).toFixed(0)}% · ${ms} ms`;
+  $("detail").textContent = `Score ${(v.prob * 100).toFixed(1)}% · alert threshold ${(v.threshold * 100).toFixed(0)}% · ${ms} ms`;
 }
 
 async function refreshStats() {
@@ -26,7 +26,8 @@ async function refreshStats() {
 }
 
 async function checkUrl(url) {
-  $("status").textContent = "Checking…"; $("status").className = "status";
+  $("status").textContent = "Checking…"; $("status").className = "status neutral";
+  $("bar").hidden = true; $("detail").textContent = "";
   show(url, await send({ type: "check", url }));
   refreshStats();
 }
