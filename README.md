@@ -27,9 +27,16 @@ The **481 KB joint network runs entirely inside a Manifest V3 Chrome extension**
 
 ## 📸 Screenshots
 
-![Popup — URL check on the current tab](results/screenshots/popup.png)
-
-![Warning page — flagged phishing URL](results/screenshots/warning.png)
+<div align="center" style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+  <div style="flex: 1 1 300px; max-width: 420px;">
+    <strong>Popup — URL check on the current tab</strong><br>
+    <img src="results/screenshots/popup.png" alt="Popup" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 8px;">
+  </div>
+  <div style="flex: 1.6 1 420px; max-width: 700px;">
+    <strong>Warning page — flagged phishing URL</strong><br>
+    <img src="results/screenshots/warning.png" alt="Warning page" style="width: 100%; height: auto; border: 1px solid #ccc; border-radius: 8px;">
+  </div>
+</div>
 
 ---
 
