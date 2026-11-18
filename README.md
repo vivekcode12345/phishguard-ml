@@ -1,73 +1,91 @@
-# PhishGuard ML: Zero-Day Phishing URL Detection with On-Device Inference
+# 🛡️ PhishGuard ML
 
-Authors: <add team member names>
+**Zero-Day Phishing URL Detection with a Hybrid Neural Network and On-Device Browser Inference**
 
-A phishing URL detector that combines a character-level CNN with handcrafted lexical features, evaluated on
-**chronological and domain-disjoint splits** (not only random splits) and deployed as a **Chrome extension whose model
-runs entirely inside the browser**. Visited URLs are never sent to a server.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-blue?logo=google-chrome)](extension/)
+[![ONNX Runtime Web](https://img.shields.io/badge/ONNX%20Runtime-Web-green?logo=onnx)](https://onnxruntime.ai/)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)](https://www.python.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js)](https://nodejs.org/)
+[![Playwright](https://img.shields.io/badge/Testing-Playwright-23ad4c?logo=playwright)](https://playwright.dev/)
 
-## Contents
+> **Team NoPhishZone** · Department of Computer Science and Engineering, SRM University-AP, India  
+> **Authors:** Vivek Verma · Rajan Jaiswal · Aman Maddheshiya · Yuvraj Verma  
+> **Paper:** *Zero-Day Phishing URL Detection with a Hybrid Neural Network and On-Device Browser Inference*
 
-- [Quick start](#quick-start)
-- [Contributions](#contributions)
-- [Data](#data)
-- [Models](#models)
-- [Results](#results)
-- [On-device deployment](#on-device-deployment)
-- [Repository layout](#repository-layout)
-- [Limitations](#limitations)
-- [Reproducibility](#reproducibility)
-- [Screenshots](#screenshots)
+---
 
-## Quick start
+## 📖 Abstract
 
-1. Open `chrome://extensions` and enable **Developer mode**.
-2. Click **Load unpacked** and select the `extension/` folder.
-3. Click the extension icon and use **Check a URL** to score an address locally.
-4. Open `chrome-extension://<extension-id>/benchmark.html` and click **Run benchmark**.
+Phishing detectors are usually reported on random train/test splits, which let near-duplicate URLs and reused domains leak into the test set and overstate how well a model will handle new, zero-day campaigns. We study phishing URL detection under **three protocols on the same data** — random, domain-disjoint, and strictly **chronological** — on 65,843 URLs combining timestamped PhishTank phishing URLs (Nov 2024–Oct 2026) with legitimate URLs from Tranco top-ranked sites.
 
-Do not visit real phishing sites to test; use the popup or the stubbed-network end-to-end test.
+We compare **Random Forest, XGBoost, a character-level CNN, two late-fusion schemes, and an early-fusion joint network** (character CNN + 67 lexical features). Thresholds are fixed at a **1% validation false-positive rate**, with confidence intervals from a domain-clustered bootstrap. Detection degrades sharply from random to chronological evaluation (XGBoost PR-AUC 0.987 → 0.926), yet the joint network keeps the **highest chronological PR-AUC of 0.957** (95% CI: 0.950–0.964) with **70.9% recall** at 1% FPR.
 
-## Contributions
+The **481 KB joint network runs entirely inside a Manifest V3 Chrome extension** through ONNX Runtime Web and scores a URL in **1.09 ms on average**, so **no visited address leaves the device**.
 
-1. **Honest zero-day evaluation.** Random, domain-disjoint and strictly chronological splits on the same data.
-   Detection quality drops sharply from random to chronological splits, which random-split papers do not show.
-2. **Hybrid model with ablation.** Random Forest, XGBoost, character CNN, three fusion strategies and an early-fusion
-   joint network, compared at a fixed 1% false-positive rate with domain-clustered bootstrap confidence intervals.
-3. **Privacy-preserving deployment.** The joint network (481 KB ONNX) runs in a Manifest V3 extension with ONNX Runtime Web.
-   JavaScript features are verified to match the Python training features on 2,000 URLs plus 196 edge cases.
-4. **Robustness and performance study.** URL obfuscation, class imbalance, training-seed variability, latency and memory.
+---
 
-## Data
+## 🚀 Quick Start
 
-| Class | Source | Notes |
+### Install the Chrome Extension
+
+1. Open `chrome://extensions` and enable **Developer mode** (toggle in the top right).
+2. Click **Load unpacked** and select the `extension/` folder of this repository.
+3. Click the extension icon and use **Check a URL** to score any address locally — nothing is sent to a server.
+4. Open `chrome-extension://<extension-id>/benchmark.html` and click **Run benchmark** to measure on-device latency.
+
+> ⚠️ Do not visit real phishing sites to test. Use the popup, the stubbed-network end-to-end test, or the benchmark page instead.
+
+### Install JavaScript Dependencies (for tests)
+
+```bash
+npm install
+```
+
+---
+
+## 🎯 Key Contributions
+
+| # | Contribution | What it means |
 |---|---|---|
-| Phishing | PhishTank online-valid feed, Nov 2024 to Oct 2026 | 31,178 URLs after cleaning, each with a submission timestamp |
-| Legitimate | Tranco top-100k domains | Same-site links from 6,000 homepages, plus 12,735 bare homepage URLs from additional domains so that both classes have the same share (33%) of domain-only URLs |
+| 1 | **Zero-day evaluation** | Same models under random, domain-disjoint, and strictly chronological splits on 65,843 URLs, thresholds fixed at 1% validation FPR, domain-clustered bootstrap intervals. |
+| 2 | **Hybrid model + ablation** | Random Forest, XGBoost, character CNN, two late-fusion schemes (average, stacking), and an early-fusion joint network — each compared at a fixed 1% FPR. |
+| 3 | **Robustness analysis** | Six URL edits, three prevalence levels, three training seeds; identifies a benign-looking deep-path weakness. |
+| 4 | **Private real-time deployment** | 481 KB ONNX model in a Manifest V3 Chrome extension with a verified JavaScript feature port; latency and memory measured against a local HTTP API baseline. |
 
-After cleaning the dataset has 69,787 URLs. Domains that appear in both classes (free hosting and shorteners) were removed.
-For the chronological split, 3,944 phishing URLs were dropped so that no domain appears in two splits; the models use 65,843 URLs.
-The data files are not committed. They are rebuilt by `notebooks/project.ipynb`.
+---
 
-### Splits
+## 🗃️ Data
 
-| Split | Construction |
-|---|---|
-| Random | Stratified 70/15/15 (reference only) |
-| Domain-disjoint | Whole domains assigned to train, validation or test |
-| Chronological | Phishing URLs split by submission time (validation from 2026-06-21, test from 2026-08-14), domain-disjoint across splits; legitimate URLs have no timestamp and are split by domain |
+| Class | Source | Count | Notes |
+|---|---|---|---|
+| **Phishing** | PhishTank online-valid feed | 31,178 | November 2024 – October 2026, each with a submission timestamp |
+| **Legitimate** | Tranco top-100k domains | ~38,609 | Same-site links from 6,000 homepages + 12,735 bare homepage URLs (33% domain-only per class, matching phishing) |
 
-Phishing domains are reused over time: 56% of the validation and 28% of the test phishing URLs in the chronological split
-were on domains already seen in an earlier split and had to be removed.
+After cleaning, the dataset has **69,787 URLs**. Domains appearing in both classes (free hosting, shorteners) were removed. For the chronological split, 3,944 phishing URLs were dropped so no domain appears in two splits — leaving **65,843 URLs** for modeling.
 
-## Models
+### Evaluation Splits
 
-| Model | Input |
-|---|---|
-| Random Forest, XGBoost | 67 lexical features (lengths, character counts, entropy, keywords, brand mentions, TLD one-hot, ...) |
-| Character CNN | First 200 characters of the URL (scheme removed), embedding and two Conv1d layers, 105,889 parameters |
-| Joint network (deployed) | CNN branch and handcrafted-feature branch trained end to end, 122,529 parameters |
-| Late fusion | Weighted average and logistic-regression stacking of XGBoost and CNN probabilities |
+| Split | Construction | Purpose |
+|---|---|---|
+| **Random** | Stratified 70/15/15 | Reference only — upper bound, prone to leakage |
+| **Domain-disjoint** | Whole registered domains assigned to train / validation / test | Tests generalisation to unseen domains |
+| **Chronological** | Phishing split by submission time (val from 2026-06-21, test from 2026-08-14), domain-disjoint across splits; legitimate URLs split by domain | **True zero-day** — tests detection of future campaigns |
+
+Phishing domains are strongly reused over time: **56% of validation** and **28% of test** phishing URLs in the chronological split fell on domains already seen in an earlier split and were removed.
+
+---
+
+## 🤖 Models
+
+| Model | View | Input | Parameters |
+|---|---|---|---|
+| **Random Forest** | Lexical | 67 handcrafted features (lengths, entropy, TLD, brand, keywords, IP host, punycode, …) | ~300 trees |
+| **XGBoost** | Lexical | 67 handcrafted features | 400 trees, depth 6, rate 0.1 |
+| **Character CNN** | Character | First 200 characters of URL (scheme removed), 95-symbol vocabulary | 105,889 |
+| **Late fusion (average)** | Character + Lexical | Validation-tuned weighted average of XGBoost + CNN scores | — |
+| **Late fusion (stacking)** | Character + Lexical | Logistic-regression stacking of XGBoost + CNN scores | — |
+| **Joint network** *(deployed)* | Character + Lexical | Early fusion: CNN branch concatenated with 64-unit lexical branch, two-layer head | **122,529** |
 
 ## Results
 
@@ -106,6 +124,19 @@ the recall of the character-based models. This matches a path-length bias in the
 
 Class imbalance (joint network): PR-AUC 0.957 at the natural 37% phishing share, 0.813 at 5% and 0.684 at 1%;
 precision falls to 0.371 at 1% prevalence while recall stays near 0.72. Real browsing has far fewer phishing URLs than the test set.
+
+### Ablation: Chronological test split (95% domain-clustered bootstrap CI)
+
+| Model | PR-AUC (95% CI) | Precision | Recall | F1 | Test FPR |
+|---|---|---|---|---|---|
+| Random Forest (lexical) | 0.908 [0.896–0.918] | 0.955 | 0.609 | 0.744 | 0.017 |
+| XGBoost (lexical) | 0.926 [0.916–0.936] | 0.968 | 0.618 | 0.754 | 0.012 |
+| Character CNN (chars) | 0.932 [0.924–0.940] | 0.974 | 0.614 | 0.753 | 0.009 |
+| Late fusion (average) | 0.950 [0.942–0.956] | 0.974 | 0.700 | 0.815 | 0.011 |
+| Late fusion (stacking) | 0.955 [0.949–0.962] | 0.972 | 0.725 | 0.831 | 0.012 |
+| **Joint network** | **0.957 [0.950–0.964]** | 0.971 | **0.709** | 0.820 | 0.012 |
+
+---
 
 ## On-device deployment
 
@@ -150,6 +181,44 @@ ONNX probabilities agree within 4.5e-7 with 0 decision flips; an end-to-end brow
 - Results come from a single dataset, a single data collection window and one validation-selected threshold.
 - Manifest V3 cannot block a navigation synchronously; the warning page replaces the tab a few milliseconds after the navigation starts.
 - Performance numbers are from one machine and one run per measurement.
+
+---
+
+## 📚 Related Work (at a glance)
+
+This work differs from recent studies by combining **strict zero-day splits**, **hybrid character+lexical fusion**, **on-device browser deployment**, and **measured latency/memory**:
+
+| Study | Year | Method | Dataset | Key result | How we differ |
+|---|---|---|---|---|---|
+| BiLSTM / char-embedding | 2025 | 4-class classification | ~650k Kaggle URLs | ~97% accuracy | Domain & time-disjoint splits; 1% FPR threshold |
+| Multi-kernel CNN + BiGRU | 2025 | Deep URL model | 522k Kaggle URLs | 98.46% acc, AUC 0.996 | Tests on unseen domains and future URLs |
+| Wide-and-deep CNN + lexical | 2026 | CNN + 40 features | ~6.1M Kaggle URLs | 98.9% acc | Same fusion idea, but zero-day protocol + on-device |
+| CNN + LightGBM ensemble | 2025 | 60/40 ensemble | PhishTank + Tranco, 99k URLs | 99.82% acc | Chronological split + obfuscation tests |
+| BERT on 3B URLs | 2024 | Pre-trained transformer | GramBeddings, Dmoz, ad URLs | 0.974 phishing acc | 122k-parameter model; seeds and bootstrap CIs |
+| ModernBERT few-shot | 2025 | Few-shot + features | 88k + 235k URLs | 99.9% acc, 10 examples/class | Strict splits; 1.09 ms with 481 KB model |
+| MobileBERT page source | 2026 | Client-side transformer | PhishPedia, 30k+30k | 91%+ zero-day, 7× less memory | URL only, no page fetch; 82 MB total memory |
+| RF + Grey Wolf extension | 2026 | Chrome extension | PhishTank 2024, UCI, 80k | 98.7% acc, MCC 0.96 | Time-ordered evaluation; local neural model |
+| RF/SVM/kNN extension | 2024 | Chrome extension | UCI phishing, 11k pages | RF recall 0.970 | Larger timestamped data; latency measured |
+| XGBoost + SHAP | 2024 | Cross-dataset | 88k + 19k URLs | 97–99% in-dataset, 51–59% cross-dataset | Disjoint protocols + fusion remedy |
+| Graph autoencoder DOM | 2026 | GAT on domain+DOM | PhishPedia 6k sites | F1 93.9%, ~20 ms/page | URL string only; no page download |
+
+---
+
+## 📄 Citation
+
+If you use this work, please cite:
+
+```
+@article{nophishzone2026,
+  author    = {Vivek Verma and Rajan Jaiswal and Aman Maddheshiya and Yuvraj Verma},
+  title     = {Zero-Day Phishing URL Detection with a Hybrid Neural Network and On-Device Browser Inference},
+  journal   = {Department of Computer Science and Engineering, SRM University-AP},
+  year      = {2026},
+  note      = {Team NoPhishZone}
+}
+```
+
+**Repository:** `https://github.com/vivekcode12345/phishguard-ml`
 
 ## Reproducibility
 
