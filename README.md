@@ -25,6 +25,14 @@ The **481 KB joint network runs entirely inside a Manifest V3 Chrome extension**
 
 ---
 
+## 📸 Screenshots
+
+![Popup — URL check on the current tab](results/screenshots/popup.png)
+
+![Warning page — flagged phishing URL](results/screenshots/warning.png)
+
+---
+
 ## 🚀 Quick Start
 
 ### Install the Chrome Extension
@@ -242,9 +250,3 @@ npm run test:e2e
 
 The extension benchmark is run manually from `chrome-extension://<extension-id>/benchmark.html`; append
 `?api=http://127.0.0.1:8787/score` when comparing with the local HTTP API.
-
-## Screenshots
-
-![Popup](results/screenshots/popup.png)
-
-![Warning page](results/screenshots/warning.png)
